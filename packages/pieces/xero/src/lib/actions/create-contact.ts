@@ -32,9 +32,9 @@ export const xeroCreateContactAction = createAction({
       options: {
         disabled: false,
         options: [
-          { value: ContactStatus.ACTIVE, label: 'ACTIVE' },
-          { value: ContactStatus.ARCHIVED, label: 'ARCHIVED' },
-          { value: ContactStatus.GDPRREQUEST, label: 'GDPRREQUEST' },
+          { value: ContactStatus.ACTIVE, label: 'Active' },
+          { value: ContactStatus.ARCHIVED, label: 'Archived' },
+          { value: ContactStatus.GDPRREQUEST, label: 'GDPR Request' },
         ]
       }
     }),
