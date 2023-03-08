@@ -40,6 +40,7 @@ import { wordpress } from '@activepieces/piece-wordpress';
 import { zoom } from '@activepieces/piece-zoom';
 import { generatebanners } from '@activepieces/piece-generatebanners';
 import { connections } from '@activepieces/piece-connections';
+import { xero } from '@activepieces/piece-xero';
 
 export const pieces: Piece[] = [
     airtable,
@@ -81,6 +82,7 @@ export const pieces: Piece[] = [
     twilio,
     typeform,
     wordpress,
+    xero,
     zoom,
     connections
 ].sort((a, b) => a.displayName > b.displayName ? 1 : -1);
