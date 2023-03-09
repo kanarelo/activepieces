@@ -1,0 +1,27 @@
+{
+  "name": "pieces-openapi",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/pieces/openapi/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/pieces/openapi",
+        "tsConfig": "packages/pieces/openapi/tsconfig.lib.json",
+        "packageJson": "packages/pieces/openapi/package.json",
+        "main": "packages/pieces/openapi/src/index.ts",
+        "assets": ["packages/pieces/openapi/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/pieces/openapi/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

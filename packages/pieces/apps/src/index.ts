@@ -41,6 +41,7 @@ import { zoom } from '@activepieces/piece-zoom';
 import { generatebanners } from '@activepieces/piece-generatebanners';
 import { connections } from '@activepieces/piece-connections';
 import { xero } from '@activepieces/piece-xero';
+import { openapi } from '@activepieces/piece-openapi';
 
 export const pieces: Piece[] = [
     airtable,
@@ -70,6 +71,7 @@ export const pieces: Piece[] = [
     hubspot,
     mailchimp,
     openai,
+    openapi,
     pipedrive,
     posthog,
     rssFeed,
