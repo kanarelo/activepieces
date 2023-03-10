@@ -54,6 +54,7 @@ export const pieces: Piece[] = [
     calendly,
     csv,
     clickup,
+    connections,
     discord,
     drip,
     dropbox,
@@ -86,9 +87,7 @@ export const pieces: Piece[] = [
     typeform,
     trello,
     wordpress,
-    xero,
     zoom,
-    connections,
     youtube,
 ].sort((a, b) => a.displayName > b.displayName ? 1 : -1);
 

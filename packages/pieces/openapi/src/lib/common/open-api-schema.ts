@@ -6021,7 +6021,7 @@ export interface components {
        * @description State of the plugin 
        * @enum {number}
        */
-      state?: NotRunning | Starting | Running | FailedToStart | FailedToStayRunning | Stopping;
+      state?: 'NotRunning' | 'Starting' | 'Running' | 'FailedToStart' | 'FailedToStayRunning' | 'Stopping';
     };
     PluginManifestWebapp: {
       /** @description Globally unique identifier that represents the plugin. */
