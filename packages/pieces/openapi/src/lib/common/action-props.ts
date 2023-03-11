@@ -1,5 +1,5 @@
 import { DynamicPropsValue, PieceProperty, Property } from "@activepieces/framework"
-import { OperationObject, ParameterObject, ReferenceObject, SchemaObject } from "openapi-typescript"
+import { OperationObject, ParameterObject, SchemaObject } from "openapi-typescript"
 import { ActionParams, PropertyMap, PropertyType } from "./models"
 
 export const createParameterProperties = (
