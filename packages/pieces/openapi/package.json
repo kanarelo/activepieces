@@ -1,4 +1,7 @@
 {
   "name": "@activepieces/piece-openapi",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "jsonref": "^8.0.8"
+  }
 }
