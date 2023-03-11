@@ -1,20 +1,28 @@
-import {
-  operations as Operations,
-  paths as Paths,
-  components as Components,
-} from './open-api-schema'
+import { ActionContext, Property } from "@activepieces/framework"
+import { PathItemObject, PathsObject } from "openapi-typescript"
 
-export type PathType = keyof Paths
-export type OperationType = keyof Operations
-export type SchemaType = keyof Components['schemas']
-export type Operation = Operations[OperationType]
+type Path = keyof PathsObject
 
 export interface OpenAPIAction {
-  path: PathType, 
-  methods: APIMethod[]
+  path: Path, 
+  methods: string[]
+}
+export type APIMethod = keyof PathItemObject
+
+export type ActionParams = {
+  queryParams: string[],
+  pathParams: string[],
+  bodyParams: string[]
 }
 
-export type APIPaths = Paths
-export type APIComponents = Components
-export type APIOperations = Operations
-export type APIMethod = keyof Paths[PathType]
+export const PropertyMap = {
+  integer: Property.Number,
+  string: Property.ShortText,
+  number: Property.ShortText,
+  boolean: Property.Checkbox,
+  array: Property.Array,
+  object: Property.Object
+}
+
+export type PropertyType = keyof typeof PropertyMap
+export type PropsValueType = keyof ActionContext<unknown>
