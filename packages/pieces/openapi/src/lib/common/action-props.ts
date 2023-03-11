@@ -1,5 +1,5 @@
 import { DynamicPropsValue, PieceProperty, Property } from "@activepieces/framework"
-import { OperationObject, ParameterObject, SchemaObject } from "openapi-typescript"
+import { OperationObject, ParameterObject, SchemaObject, OAuthFlowObject, SecuritySchemeObject } from "openapi-typescript"
 import { ActionParams, PropertyMap, PropertyType } from "./models"
 
 export const createParameterProperties = (
@@ -115,4 +115,62 @@ export const createProps = (operation: OperationObject) => {
   }
 
   return { props, params }
+}
+
+export function createAuthenticationProps(
+  securitySchemes: Record<string, SecuritySchemeObject>, 
+  baseUrl: string
+): PieceProperty {
+  const props: PieceProperty = {}
+
+  Object.keys(securitySchemes).forEach((schemeName) => {
+    const scheme = securitySchemes[schemeName]
+
+    if ("type" in scheme) {
+      if (scheme.type === "oauth2") {
+        if (scheme.flows.authorizationCode) {
+          const flow: OAuthFlowObject = scheme.flows.authorizationCode
+
+          props[`authentication_${scheme.type}`] = Property.OAuth2({
+            displayName: 'Authentication',
+            description: scheme.description,
+            required: true,
+            authUrl: `${baseUrl}/${flow.authorizationUrl}`,
+            tokenUrl: `${baseUrl}/${flow.tokenUrl}`,
+            scope: Object.keys(flow?.scopes as Record<string, never>) 
+          })
+        }
+      } else if (scheme.type === "apiKey") {
+        props[`authentication_${scheme.type}`] = Property.SecretText({
+          displayName: scheme.name,
+          description: scheme.description,
+          required: true,
+        })
+      } else if (scheme.type === "http") {
+        props[`authentication_${scheme.type}`] = Property.BasicAuth({
+          displayName: scheme.scheme,
+          description: scheme.description,
+          required: true,
+          username: {
+            displayName: "Username",
+            description: "username"
+          }, 
+          password: {
+            displayName: "Password",
+            description: "password"
+          }
+        })
+      } else if (scheme.type === "openIdConnect") {
+        props[`authentication_${scheme.type}`] = Property.SecretText({
+          displayName: "Open ID Connect",
+          description: scheme.description,
+          required: true,
+          defaultValue: scheme.openIdConnectUrl
+        })
+      }
+    }  
+  })
+
+  return props
+
 }
