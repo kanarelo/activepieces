@@ -1,16 +1,21 @@
 import { HttpMethod } from "@activepieces/framework"
-import { openAPICreateActions } from "../common/create-actions";
-import { APIMethod, OpenAPIAction } from "../common/models";
+import { OpenAPI3 } from "openapi-typescript"
 
-const GET = HttpMethod.GET as APIMethod
-const POST = HttpMethod.POST as APIMethod
-const PUT = HttpMethod.PUT as APIMethod
-const DELETE = HttpMethod.DELETE as APIMethod
-const PATCH = HttpMethod.PATCH as APIMethod
+import { openAPICreateActions } from "../common/create-actions"
+import { OpenAPIAction } from "../common/models"
+
+import * as APISPec from "../common/mattermost/mattermost-open-api-spec.json"
+
+const GET = HttpMethod.GET
+const POST = HttpMethod.POST
+const PUT = HttpMethod.PUT
 
 const paths: OpenAPIAction[] = [
   {path: "/channels", methods: [GET, POST]},
   {path: "/channels/{channel_id}", methods: [GET, PUT]},
 ]
 
-export const openApiActions = openAPICreateActions(paths)
+export const openApiActions = openAPICreateActions(
+  (APISPec as unknown as OpenAPI3),
+  paths
+)
