@@ -1,8 +1,8 @@
-import { ActionContext, AuthenticationType, httpClient, HttpMethod, HttpRequest } from "@activepieces/framework"
+import { ActionContext, Authentication, httpClient, HttpMethod, HttpRequest } from "@activepieces/framework"
 import { ActionParams, PropsValueType } from "./models"
 
 export const makeHttpRequest = async (
-  accessToken: string,
+  authentication: Authentication | undefined,
   propsValue: ActionContext<unknown>, 
   params: ActionParams,
   method: HttpMethod,
@@ -38,10 +38,7 @@ export const makeHttpRequest = async (
     method,
     url,
     body: bodyParams,
-    authentication: {
-      type: AuthenticationType.BEARER_TOKEN,
-      token: (accessToken || "")
-    },
+    authentication,
     queryParams
   }
 
