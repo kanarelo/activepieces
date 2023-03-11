@@ -4,19 +4,26 @@ import { OpenAPI3 } from "openapi-typescript"
 import { openAPICreateActions } from "../common/create-actions"
 import { OpenAPIAction } from "../common/models"
 
-import * as MattermostAPISPec from "../common/mattermost/mattermost-open-api-spec.json"
-// import * as SpotifyAPISPec from "../common/spotify/unofficial-spotify-open-api-schema.json"
+// import * as MattermostAPISPec from "../common/mattermost/mattermost-open-api-spec.json"
+import * as SpotifyAPISPec from "../common/spotify/openapi (1).json"
 
 const GET = HttpMethod.GET
 const POST = HttpMethod.POST
-const PUT = HttpMethod.PUT
 
 const paths: OpenAPIAction[] = [
-  {path: "/channels", methods: [GET, POST]},
-  {path: "/channels/{channel_id}", methods: [GET, PUT]},
+  {path: "/albums/{id}", methods: [GET]},
+  {path: "/albums/{id}/tracks", methods: [GET]},
+  {path: "/albums/{id}/tracks", methods: [GET]},
+  {path: "/artists/{id", methods: [GET]},
+  {path: "/artist", methods: [GET]},
+  {path: "/artists/{id}/album", methods: [GET]},
+  {path: "/artists/{id}/top-track", methods: [GET]},
+  {path: "/artists/{id}/related-artist", methods: [GET]},
+  {path: "/shows/{id", methods: [GET]},
+  {path: "/playlists/{playlist_id}/tracks", methods: [GET, POST]}
 ]
 
 export const openApiActions = openAPICreateActions(
-  (MattermostAPISPec as unknown as OpenAPI3), 
+  (SpotifyAPISPec as unknown as OpenAPI3), 
   paths
 )
