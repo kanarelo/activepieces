@@ -9,7 +9,6 @@ export const flattenReferences = (specification: OpenAPI3): OpenAPI3 => {
       console.error(err);
     }
     else {
-      console.debug(schema)
       flattened = (schema ?? {}) as OpenAPI3
     }
   })

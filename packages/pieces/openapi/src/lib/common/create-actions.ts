@@ -113,11 +113,17 @@ const getAuthentication = (
           token: propsValue.authentication_apiKey as string
         }
       }
-      else if (prop === "authentication_http" && prop in propsValue) {
+      else if (prop === "authentication_http_basic" && prop in propsValue) {
         auth = {
           type: AuthenticationType.BASIC,
-          username: (propsValue.authentication_http as BasicAuthPropertyValue).username,
-          password: (propsValue.authentication_http as BasicAuthPropertyValue).password,
+          username: (propsValue.authentication_http_basic as BasicAuthPropertyValue).username,
+          password: (propsValue.authentication_http_basic as BasicAuthPropertyValue).password,
+        }
+      }
+      else if (prop.startsWith("authentication_http_") && prop in propsValue) {
+        auth = {
+          type: AuthenticationType.BEARER_TOKEN,
+          token: (propsValue[prop as keyof typeof propsValue] as string)
         }
       }
       else if (prop === "authentication_oauth2" && prop in propsValue) {
@@ -129,7 +135,7 @@ const getAuthentication = (
         })
 
         if (oauth.scope.filter(x => endpoint_scopes.includes(x))) {
-          console.debug("Please check your approved scope. endpoint", endpoint_scopes, "approved", oauth.scope)
+          console.debug("Please check your approved scope. expected:", endpoint_scopes, "approved:", oauth.scope)
         }
 
         auth = {
