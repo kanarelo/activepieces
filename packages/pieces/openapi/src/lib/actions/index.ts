@@ -4,7 +4,8 @@ import { OpenAPI3 } from "openapi-typescript"
 import { openAPICreateActions } from "../common/create-actions"
 import { OpenAPIAction } from "../common/models"
 
-import * as APISPec from "../common/mattermost/mattermost-open-api-spec.json"
+import * as MattermostAPISPec from "../common/mattermost/mattermost-open-api-spec.json"
+// import * as SpotifyAPISPec from "../common/spotify/unofficial-spotify-open-api-schema.json"
 
 const GET = HttpMethod.GET
 const POST = HttpMethod.POST
@@ -16,6 +17,6 @@ const paths: OpenAPIAction[] = [
 ]
 
 export const openApiActions = openAPICreateActions(
-  (APISPec as unknown as OpenAPI3),
+  (MattermostAPISPec as unknown as OpenAPI3), 
   paths
 )

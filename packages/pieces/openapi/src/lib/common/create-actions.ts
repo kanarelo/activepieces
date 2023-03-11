@@ -1,6 +1,7 @@
 import { Action, ActionContext, createAction, HttpMethod, Property } from "@activepieces/framework"
 
 import { OpenAPI3 } from "openapi-typescript"
+import { parse } from "jsonref/dist"
 
 import { OpenAPIAction, APIMethod } from "./models"
 import { createProps } from "./action-props"
@@ -10,17 +11,22 @@ export function openAPICreateActions(
   specification: OpenAPI3,
   filtered: OpenAPIAction[]
 ) {
-  
+  const flattened: OpenAPI3 = specification
+  // parse(specification, {scope: ''})
+  //   .then(result => {
+  //     flattened = result
+  //   })
+
   const actions: Action[] = []
   filtered.forEach(action => {
     action.methods.forEach((method) => {
-      if (!specification.paths) return
+      if (!flattened.paths) return
       
       const verb = method.toLowerCase() as APIMethod
-      const operation = specification.paths[action.path][verb]
+      const operation = flattened.paths[action.path][verb]
       const { props, params:api_parameters } = createProps(operation)
 
-      const base_url = specification.servers?.[0].url as string
+      const base_url = flattened.servers?.[0].url as string
 
       actions.push(
         createAction({

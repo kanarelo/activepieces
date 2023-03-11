@@ -65,6 +65,7 @@
     "ioredis": "^5.2.5",
     "jshint": "^2.13.6",
     "jsonlint-mod": "^1.7.6",
+    "jsonref": "^8.0.8",
     "jsonwebtoken": "^9.0.0",
     "jszip": "^3.10.1",
     "kl-angular-mentions": "^1.2.3",
@@ -90,7 +91,7 @@
     "stripe": "^11.12.0",
     "subsink": "^1.0.2",
     "tsconfig-paths": "^4.1.2",
-    "tslib": "^2.3.0",
+    "tslib": "^2.5.0",
     "typeorm": "^0.3.11",
     "zone.js": "~0.12.0"
   },
