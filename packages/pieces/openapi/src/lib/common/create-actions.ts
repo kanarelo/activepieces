@@ -1,21 +1,17 @@
 import { Action, ActionContext, createAction, HttpMethod, Property } from "@activepieces/framework"
 
 import { OpenAPI3 } from "openapi-typescript"
-import { parse } from "jsonref/dist"
 
-import { OpenAPIAction, APIMethod } from "./models"
 import { createProps } from "./action-props"
 import { makeHttpRequest } from "./http-requests"
+import { OpenAPIAction, APIMethod } from "./models"
+import { flattenReferences } from "./utils"
 
 export function openAPICreateActions(
   specification: OpenAPI3,
   filtered: OpenAPIAction[]
 ) {
-  const flattened: OpenAPI3 = specification
-  // parse(specification, {scope: ''})
-  //   .then(result => {
-  //     flattened = result
-  //   })
+  const flattened: OpenAPI3 = flattenReferences(specification)
 
   const actions: Action[] = []
   filtered.forEach(action => {
