@@ -79,14 +79,10 @@ const operationAction = (
     },
     sampleData: {},
     run: async ({ propsValue: { base_url, ...propsValue } }) => {
-      let auth: Authentication | undefined = undefined 
-
-      if (operation?.security) {
-        auth = getAuthentication(
-          operation.security,
-          propsValue as Record<string, unknown>
-        )
-      }
+      const auth: Authentication | undefined = getAuthentication(
+        operation.security,
+        propsValue as Record<string, unknown>
+      )
 
       return makeHttpRequest(
         auth,  
@@ -101,29 +97,29 @@ const operationAction = (
 }
 
 const getAuthentication = (
-  securityRequirements: SecurityRequirementObject[], 
+  securityRequirements: SecurityRequirementObject[] | undefined, 
   propsValue: Record<string, unknown>
 ) => {
   let auth: Authentication | undefined = undefined
 
   Object.keys(propsValue).forEach((prop) => {
-    if (!prop.startsWith("authentication_")) return
+    if (!prop.startsWith("auth_")) return
 
-    if (prop === "authentication_apiKey" && prop in propsValue) {
+    if (prop === "auth_apiKey" && prop in propsValue) {
       auth = {
         type: AuthenticationType.BEARER_TOKEN,
-        token: propsValue['authentication_apiKey'] as string
+        token: propsValue['auth_apiKey'] as string
       }
     }
-    else if (prop === "authentication_http_basic" && prop in propsValue) {
+    else if (prop === "auth_http_basic" && prop in propsValue) {
       auth = {
         type: AuthenticationType.BASIC,
-        username: (propsValue['authentication_http_basic'] as BasicAuthPropertyValue).username,
-        password: (propsValue['authentication_http_basic'] as BasicAuthPropertyValue).password,
+        username: (propsValue['auth_http_basic'] as BasicAuthPropertyValue).username,
+        password: (propsValue['auth_http_basic'] as BasicAuthPropertyValue).password,
       }
     }
-    else if (prop.startsWith("authentication_http_") && prop in propsValue) {
-      const scheme  = prop.replace('authentication_http_', '')
+    else if (prop.startsWith("auth_http_") && prop in propsValue) {
+      const scheme  = prop.replace('auth_http_', '')
 
       if (scheme == 'bearer') {
         auth = {
@@ -132,11 +128,11 @@ const getAuthentication = (
         }
       }
     }
-    else if (prop === "authentication_oauth2" && prop in propsValue) {
-      const oauth = propsValue['authentication_oauth2'] as OAuth2Property<boolean>
+    else if (prop === "auth_oauth2" && prop in propsValue) {
+      const oauth = propsValue['auth_oauth2'] as OAuth2Property<boolean>
       const endpoint_scopes: string[] = []
       
-      securityRequirements.forEach((requirement) => {
+      securityRequirements?.forEach((requirement) => {
         Object.values(requirement).forEach((scope) => {
           endpoint_scopes.concat(scope as string[])
         })
@@ -154,7 +150,7 @@ const getAuthentication = (
 
       auth = {
         type: AuthenticationType.BEARER_TOKEN,
-        token: (propsValue['authentication_oauth2'] as OAuth2PropertyValue).access_token
+        token: (propsValue['auth_oauth2'] as OAuth2PropertyValue).access_token
       }
     } else {
       console.debug("Authentication model not found:", prop)

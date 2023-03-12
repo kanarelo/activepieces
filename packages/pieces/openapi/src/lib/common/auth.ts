@@ -15,7 +15,7 @@ export function createAuthenticationProps(
         if (scheme.flows.authorizationCode) {
           const flow: OAuthFlowObject = scheme.flows.authorizationCode
 
-          props[`authentication_oauth2`] = Property.OAuth2({
+          props[`auth_oauth2`] = Property.OAuth2({
             displayName: 'OAuth Authentication',
             description: scheme.description,
             required: true,
@@ -25,20 +25,20 @@ export function createAuthenticationProps(
           })
         }
       } else if (scheme.type === "apiKey") {
-        props[`authentication_apiKey`] = Property.SecretText({
+        props[`auth_apiKey`] = Property.SecretText({
           displayName: "API Key",
           description: scheme.description,
           required: true,
         })
       } else if (scheme.type === "http") {
         if (scheme.scheme) {
-          props[`authentication_http_${scheme.scheme}`] = Property.SecretText({
+          props[`auth_http_${scheme.scheme}`] = Property.SecretText({
             displayName: "Access token",
             description: scheme.description,
             required: true,
           })
         } else {
-          props[`authentication_http_basic`] = Property.BasicAuth({
+          props[`auth_http_basic`] = Property.BasicAuth({
             displayName: `Basic authentication ${scheme.scheme}`,
             description: scheme.description,
             required: true,
@@ -53,7 +53,7 @@ export function createAuthenticationProps(
           })
         }
       } else if (scheme.type === "openIdConnect") {
-        props[`authentication_openIdConnect`] = Property.SecretText({
+        props[`auth_openIdConnect`] = Property.SecretText({
           displayName: "Open ID Connect",
           description: scheme.description,
           required: true,

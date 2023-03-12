@@ -45,8 +45,9 @@ export const makeHttpRequest = async (
 
   console.debug(`--------------------------------------`)
   console.debug(`makeHttpRequest`, request)
-  const response = await httpClient.sendRequest(request)
   console.debug(`--------------------------------------`)
+  
+  const response = await httpClient.sendRequest<Record<string, unknown>>(request)
   console.debug(response)
   console.debug(`--------------------------------------`)
 
