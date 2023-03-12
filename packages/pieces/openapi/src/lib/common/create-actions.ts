@@ -2,7 +2,7 @@ import { Action, ActionContext, Authentication, AuthenticationType, BasicAuthPro
 
 import { OpenAPI3, OperationObject, SecurityRequirementObject, SecuritySchemeObject } from "openapi-typescript"
 
-import { createProps } from "./action-props"
+import { createProps as createOperationProps } from "./action-props"
 import { createAuthenticationProps } from "./auth"
 import { makeHttpRequest } from "./http-requests"
 import { OpenAPIAction, APIMethod } from "./models"
@@ -15,33 +15,36 @@ export function openAPICreateActions(
 ): Action[] {
 
   const actions: Action[] = []
+  let authenticationProps: PieceProperty = {}
+
+  let document: OpenAPI3 = specification
+  
+  if (dereferenced) {
+    document = flattenReferences(specification)
+  }
+  
+  const baseUrl = document?.servers?.[0].url as string
+  const security = document?.security
+
+  if (security) {
+    authenticationProps = createAuthenticationProps(
+      document?.components?.securitySchemes as Record<string, SecuritySchemeObject>,
+      baseUrl
+    )
+  }
+
   filteredActions.forEach((action: OpenAPIAction) => {
     action.methods.forEach((method) => {
-      let document: OpenAPI3 = specification
-
-      if (dereferenced) {
-        document = flattenReferences(specification)
-      }
 
       const verb = method.toLowerCase() as APIMethod
       const operation: OperationObject = document.paths?.[action.path][verb]
-      const base_url = document.servers?.[0].url as string
-
-      let authentication: PieceProperty = {}
-
-      if (operation.security) {
-        authentication = createAuthenticationProps(
-          document.components?.securitySchemes as Record<string, SecuritySchemeObject>,
-          base_url
-        )
-      }
-
+      
       actions.push(
         operationAction(
-          authentication,
+          authenticationProps,
           operation,
           method as HttpMethod,
-          base_url,
+          baseUrl,
           action.path as string
         )
       )
@@ -52,7 +55,7 @@ export function openAPICreateActions(
 }
 
 const operationAction = (
-  authentication: PieceProperty,
+  authenticationProps: PieceProperty,
   operation: OperationObject, 
   method: HttpMethod, 
   baseUrl: string,
@@ -60,15 +63,15 @@ const operationAction = (
 ) => {
   const { 
     props, 
-    params: api_parameters 
-  } = createProps(operation)
+    params: apiParameters 
+  } = createOperationProps(operation)
 
   return createAction({
     name: operation.operationId || (path as string),
     displayName: operation.summary || "",
     description: operation.description || "",
     props: {
-      ...authentication,
+      ...authenticationProps,
       base_url: Property.LongText({
         displayName: 'Server URL',
         description: "Provide the URL where to find the endpoints/operations",
@@ -80,14 +83,14 @@ const operationAction = (
     sampleData: {},
     run: async ({ propsValue: { base_url, ...propsValue } }) => {
       const auth: Authentication | undefined = getAuthentication(
-        operation.security,
+        operation?.security,
         propsValue as Record<string, unknown>
       )
 
       return makeHttpRequest(
         auth,  
         propsValue as ActionContext<unknown>,
-        api_parameters,
+        apiParameters,
         method as HttpMethod,
         (base_url || baseUrl) as string,
         path as string

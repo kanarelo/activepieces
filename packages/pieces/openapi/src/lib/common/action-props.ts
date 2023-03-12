@@ -45,7 +45,7 @@ export const createProps = (operation: OperationObject) => {
   return { props, params }
 }
 
-export const createParameterProperties = (
+const createParameterProperties = (
   parameters: ParameterObject[],
   params: ActionParams
 ) => {
