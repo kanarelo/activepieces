@@ -19,9 +19,9 @@ export function createAuthenticationProps(
             displayName: 'OAuth Authentication',
             description: scheme.description,
             required: true,
-            authUrl: `${baseUrl}/${flow.authorizationUrl}`,
-            tokenUrl: `${baseUrl}/${flow.tokenUrl}`,
-            scope: Object.keys(flow?.scopes as Record<string, never>) 
+            authUrl: flow.authorizationUrl.startsWith("http") ? flow.authorizationUrl : `${baseUrl}/${flow.authorizationUrl}`,
+            tokenUrl: flow.tokenUrl.startsWith("http") ? flow.tokenUrl : `${baseUrl}/${flow.tokenUrl}`,
+            scope: Object.keys(flow?.scopes) 
           })
         }
       } else if (scheme.type === "apiKey") {

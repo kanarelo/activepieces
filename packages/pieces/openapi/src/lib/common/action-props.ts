@@ -81,6 +81,7 @@ const createPropertyFromSchema = (
   switch (schema.type) {
     case "object": {
       if (!("properties" in schema)) return
+      
       const fields: DynamicPropsValue = {}
 
       Object.keys(schema.properties ?? {}).forEach((name) => {
