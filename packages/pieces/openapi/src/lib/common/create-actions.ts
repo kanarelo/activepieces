@@ -1,4 +1,4 @@
-import { Action, ActionContext, Authentication, AuthenticationType, BasicAuthPropertyValue, createAction, HttpMethod, OAuth2Property, Piece, PieceProperty, Property, StaticPropsValue } from "@activepieces/framework"
+import { Action, ActionContext, Authentication, AuthenticationType, BasicAuthPropertyValue, createAction, HttpMethod, OAuth2Property, OAuth2PropertyValue, PieceProperty, Property } from "@activepieces/framework"
 
 import { OpenAPI3, OperationObject, SecurityRequirementObject, SecuritySchemeObject } from "openapi-typescript"
 
@@ -22,11 +22,11 @@ export function openAPICreateActions(
       if (dereferenced) {
         document = flattenReferences(specification)
       }
-      
+
       const verb = method.toLowerCase() as APIMethod
       const operation: OperationObject = document.paths?.[action.path][verb]
       const base_url = document.servers?.[0].url as string
-    
+
       let authentication: PieceProperty = {}
 
       if (operation.security) {
@@ -72,24 +72,28 @@ const operationAction = (
       base_url: Property.LongText({
         displayName: 'Server URL',
         description: "Provide the URL where to find the endpoints/operations",
-        required: true,
+        required: false,
         defaultValue: baseUrl
       }),
       ...props
     },
     sampleData: {},
     run: async ({ propsValue: { base_url, ...propsValue } }) => {
-      const auth: Authentication | undefined = getAuthentication(
-        operation.security ?? [],
-        propsValue as Record<string, unknown>
-      )
+      let auth: Authentication | undefined = undefined 
+
+      if (operation?.security) {
+        auth = getAuthentication(
+          operation.security,
+          propsValue as Record<string, unknown>
+        )
+      }
 
       return makeHttpRequest(
         auth,  
         propsValue as ActionContext<unknown>,
         api_parameters,
         method as HttpMethod,
-        base_url,
+        (base_url || baseUrl) as string,
         path as string
       )
     }
@@ -101,53 +105,59 @@ const getAuthentication = (
   propsValue: Record<string, unknown>
 ) => {
   let auth: Authentication | undefined = undefined
-      
+
   Object.keys(propsValue).forEach((prop) => {
-    if (prop.startsWith("authentication_")) {
-      if (prop === "authentication_apiKey" && prop in propsValue) {
+    if (!prop.startsWith("authentication_")) return
+
+    if (prop === "authentication_apiKey" && prop in propsValue) {
+      auth = {
+        type: AuthenticationType.BEARER_TOKEN,
+        token: propsValue['authentication_apiKey'] as string
+      }
+    }
+    else if (prop === "authentication_http_basic" && prop in propsValue) {
+      auth = {
+        type: AuthenticationType.BASIC,
+        username: (propsValue['authentication_http_basic'] as BasicAuthPropertyValue).username,
+        password: (propsValue['authentication_http_basic'] as BasicAuthPropertyValue).password,
+      }
+    }
+    else if (prop.startsWith("authentication_http_") && prop in propsValue) {
+      const scheme  = prop.replace('authentication_http_', '')
+
+      if (scheme == 'bearer') {
         auth = {
           type: AuthenticationType.BEARER_TOKEN,
-          token: propsValue['authentication_apiKey'] as string
+          token: (propsValue[prop as keyof typeof propsValue] as string)
         }
       }
-      else if (prop === "authentication_http_basic" && prop in propsValue) {
-        auth = {
-          type: AuthenticationType.BASIC,
-          username: (propsValue['authentication_http_basic'] as BasicAuthPropertyValue).username,
-          password: (propsValue['authentication_http_basic'] as BasicAuthPropertyValue).password,
-        }
-      }
-      else if (prop.startsWith("authentication_http_") && prop in propsValue) {
-        const scheme  = prop.replace('authentication_http_', '')
-
-        if (scheme == 'bearer') {
-          auth = {
-            type: AuthenticationType.BEARER_TOKEN,
-            token: (propsValue[prop as keyof typeof propsValue] as string)
-          }
-        }
-      }
-      else if (prop === "authentication_oauth2" && prop in propsValue) {
-        const oauth = propsValue['authentication_oauth2'] as OAuth2Property<boolean>
-        const endpoint_scopes: string[] = []
-        
-        securityRequirements.forEach((requirement) => {
-          Object.values(requirement).forEach((scope) => {
-            endpoint_scopes.concat(scope as string[])
-          })
+    }
+    else if (prop === "authentication_oauth2" && prop in propsValue) {
+      const oauth = propsValue['authentication_oauth2'] as OAuth2Property<boolean>
+      const endpoint_scopes: string[] = []
+      
+      securityRequirements.forEach((requirement) => {
+        Object.values(requirement).forEach((scope) => {
+          endpoint_scopes.concat(scope as string[])
         })
-
+      })
+      
+      if (typeof oauth.scope === "string") {
+        if ((oauth.scope as string).split(" ").filter(x => endpoint_scopes.includes(x))) {
+          console.debug("Please check your approved scope. expected:", endpoint_scopes, "approved:", oauth.scope)
+        }
+      } else {
         if (oauth.scope?.filter(x => endpoint_scopes.includes(x))) {
           console.debug("Please check your approved scope. expected:", endpoint_scopes, "approved:", oauth.scope)
         }
-
-        auth = {
-          type: AuthenticationType.BEARER_TOKEN,
-          token: oauth.valueSchema.access_token
-        }
-      } else {
-        console.debug("Authentication model not found:", prop)
       }
+
+      auth = {
+        type: AuthenticationType.BEARER_TOKEN,
+        token: (propsValue['authentication_oauth2'] as OAuth2PropertyValue).access_token
+      }
+    } else {
+      console.debug("Authentication model not found:", prop)
     }
   })
 

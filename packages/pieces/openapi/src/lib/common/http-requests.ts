@@ -11,11 +11,6 @@ export const makeHttpRequest = async (
 ) => {
   let url = `${baseURL}${path}`
 
-  
-  console.log("--------------------------------------------------------------------------")
-  console.log(url)
-  console.log("--------------------------------------------------------------------------")
-
   const bodyParams: Record<string, unknown> = {}
   const queryParams: Record<string, string> = {}
 
@@ -25,31 +20,35 @@ export const makeHttpRequest = async (
       const propValue = propsValue[param as PropsValueType]
       url = url.replace(`{${param}}`, `${propValue}`)
     })
-  
+
   params
     .queryParams
     .forEach(param => {
       const value = propsValue[param as PropsValueType] as string
       if (value) queryParams[param] = value
     })
-  
+
   params
     .bodyParams
     .forEach(param => {
       const value = propsValue[param as PropsValueType]
       if (value) bodyParams[param] = value
     })
-  
-  const request: HttpRequest<Record<string, unknown>> = {
+
+  const request: HttpRequest = {
     method,
     url,
-    body: bodyParams,
     authentication,
-    queryParams
+    body: bodyParams ?? undefined,
+    queryParams: queryParams ?? undefined
   }
 
+  console.debug(`--------------------------------------`)
+  console.debug(`makeHttpRequest`, request)
   const response = await httpClient.sendRequest(request)
-  console.debug(`makeHttpRequest(${path}, ${method})`, response)
+  console.debug(`--------------------------------------`)
+  console.debug(response)
+  console.debug(`--------------------------------------`)
 
   return response
 }
