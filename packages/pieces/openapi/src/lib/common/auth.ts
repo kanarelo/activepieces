@@ -14,14 +14,15 @@ export function createAuthenticationProps(
       if (scheme.type === "oauth2") {
         if (scheme.flows.authorizationCode) {
           const flow: OAuthFlowObject = scheme.flows.authorizationCode
+          const scope = ['root_readwrite'] //Object.keys(flow?.scopes)
 
           props[`auth_oauth2`] = Property.OAuth2({
             displayName: 'OAuth Authentication',
             description: scheme.description,
             required: true,
-            authUrl: flow.authorizationUrl.startsWith("http") ? flow.authorizationUrl : `${baseUrl}/${flow.authorizationUrl}`,
-            tokenUrl: flow.tokenUrl.startsWith("http") ? flow.tokenUrl : `${baseUrl}/${flow.tokenUrl}`,
-            scope: Object.keys(flow?.scopes) 
+            authUrl: flow.authorizationUrl.startsWith("http") ? flow.authorizationUrl : `${baseUrl}${flow.authorizationUrl}`,
+            tokenUrl: flow.tokenUrl.startsWith("http") ? flow.tokenUrl : `${baseUrl}${flow.tokenUrl}`,
+            scope
           })
         }
       } else if (scheme.type === "apiKey") {
