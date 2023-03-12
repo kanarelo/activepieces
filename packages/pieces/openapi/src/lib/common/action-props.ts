@@ -1,12 +1,12 @@
 import { DynamicPropsValue, PieceProperty, Property } from "@activepieces/framework"
 import { OperationObject, ParameterObject, SchemaObject } from "openapi-typescript"
-import { ActionParams, PropertyMap, PropertyType } from "./models"
+import { ActionParams as ActionParameters, PropertyMap, PropertyType } from "./models"
 
 
 export const createProps = (operation: OperationObject) => {
   let props: PieceProperty = {}
 
-  const params: ActionParams = {
+  const params: ActionParameters = {
     queryParams: [],
     pathParams: [],
     bodyParams: [],
@@ -34,7 +34,9 @@ export const createProps = (operation: OperationObject) => {
             if (schema && "type" in schema) {
               props = {
                 ...props,
-                ...createPropertyFromSchema(schema, params)
+                ...{
+                  [schema.title as string]: createPropertyFromSchema(schema, params)
+                } as PieceProperty
               }
             }
           }
@@ -47,7 +49,7 @@ export const createProps = (operation: OperationObject) => {
 
 const createParameterProperties = (
   parameters: ParameterObject[],
-  params: ActionParams
+  params: ActionParameters
 ) => {
   const props: PieceProperty = {}
 
@@ -59,7 +61,7 @@ const createParameterProperties = (
         params['pathParams'].push(param.name)
       }
 
-      props[`${param.name}`] = PropertyMap[param.schema.type as PropertyType]({
+      props[param.name] = PropertyMap[param.schema.type as PropertyType]({
         displayName: param.schema?.title || param.name || "",
         description: param.schema?.description || param.description || "",
         required: (param.required || false)
@@ -72,7 +74,10 @@ const createParameterProperties = (
 
 const createPropertyFromSchema = (
   schema: SchemaObject,
-  params: ActionParams
+  params: ActionParameters,
+  displayName?: string,
+  description?: string,
+  required = false
 ) => {
   if (!("type" in schema)) return
   
@@ -85,21 +90,16 @@ const createPropertyFromSchema = (
       const fields: DynamicPropsValue = {}
 
       Object.keys(schema.properties ?? {}).forEach((name) => {
-        const property = schema.properties?.[name]
-        if (property && "type" in property) {
-          fields[name] = PropertyMap[property.type as PropertyType]({
-            displayName: name,
-            description: property?.description || "",
-            required: ((schema.required ?? []).includes(name) || false)
-          })
-
+        const childSchema: SchemaObject = schema.properties?.[name] as SchemaObject
+        if (childSchema && "type" in childSchema) {
+          fields[name] = createPropertyFromSchema(childSchema, params)
           params.bodyParams.push(name)
         }
       })
 
       if (fields) {
-        props[`fields`] = Property.DynamicProperties({
-          displayName: 'Fields',
+        props[`object_properties`] = Property.DynamicProperties({
+          displayName: 'Properties',
           required: true,
           refreshers: [],
           props: async () => fields
@@ -109,10 +109,36 @@ const createPropertyFromSchema = (
       break
     }
     case "array": {
+      if (schema.items){
+        return Property.Array({
+          displayName: 'Fields',
+          required: true
+        })
+      }
+
       break
     }
     default: {
-      break
+      if (schema.enum) {
+        return Property.StaticDropdown({
+          displayName: displayName ?? schema.title as string,
+          description: description ?? (schema?.description || ""),
+          required: (schema.nullable ?? required) as never,
+          defaultValue: schema.default,
+          options: {
+            options: schema.enum.map(
+              (type) => ({ label: `${type}`.toUpperCase(), value: type })
+            )
+          }
+        })
+      }
+
+      return PropertyMap[schema.type as PropertyType]({
+        displayName: displayName ?? schema.title as string,
+        description: description ?? (schema?.description || ""),
+        required: schema.nullable ?? required,
+        defaultValue: schema.default as never
+      })
     }
   }
 

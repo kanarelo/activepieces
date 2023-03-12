@@ -19,7 +19,7 @@ export function openAPICreateActions(
 
   let document: OpenAPI3 = specification
   
-  if (dereferenced) {
+  if (!dereferenced) {
     document = flattenReferences(specification)
   }
   
