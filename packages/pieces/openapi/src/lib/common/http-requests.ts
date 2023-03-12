@@ -10,6 +10,12 @@ export const makeHttpRequest = async (
   path: string
 ) => {
   let url = `${baseURL}${path}`
+
+  
+  console.log("--------------------------------------------------------------------------")
+  console.log(url)
+  console.log("--------------------------------------------------------------------------")
+
   const bodyParams: Record<string, unknown> = {}
   const queryParams: Record<string, string> = {}
 

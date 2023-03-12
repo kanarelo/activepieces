@@ -1,4 +1,4 @@
-import { ActionContext, Property } from "@activepieces/framework"
+import { ActionContext, PieceProperty, Property, StaticPropsValue } from "@activepieces/framework"
 import { PathItemObject, PathsObject } from "openapi-typescript"
 
 type Path = keyof PathsObject
@@ -25,4 +25,4 @@ export const PropertyMap = {
 }
 
 export type PropertyType = keyof typeof PropertyMap
-export type PropsValueType = keyof ActionContext<unknown>
+export type PropsValueType = keyof ActionContext<StaticPropsValue<PieceProperty>>
