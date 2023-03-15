@@ -4,6 +4,7 @@ import { asana } from '@activepieces/piece-asana';
 import { bannerbear } from '@activepieces/piece-bannerbear';
 import { binance } from '@activepieces/piece-binance';
 import { blackbaud } from '@activepieces/piece-blackbaud';
+import { bubbleio } from '@activepieces/piece-bubbleio';
 import { calcom } from '@activepieces/piece-cal-com';
 import { calendly } from '@activepieces/piece-calendly';
 import { clickup } from '@activepieces/piece-clickup';
@@ -37,9 +38,9 @@ import { todoist } from '@activepieces/piece-todoist';
 import { twilio } from '@activepieces/piece-twilio';
 import { typeform } from '@activepieces/piece-typeform';
 import { wordpress } from '@activepieces/piece-wordpress';
-import { zoom } from '@activepieces/piece-zoom';
 import { generatebanners } from '@activepieces/piece-generatebanners';
 import { connections } from '@activepieces/piece-connections';
+import { zoom } from '@activepieces/piece-zoom';
 import { youtube } from '@activepieces/piece-youtube';
 import { trello } from '@activepieces/piece-trello';
 
@@ -49,10 +50,12 @@ export const pieces: Piece[] = [
     bannerbear,
     binance,
     blackbaud,
+    bubbleio,
     calcom,
     calendly,
     csv,
     clickup,
+    connections,
     discord,
     drip,
     dropbox,
@@ -86,7 +89,7 @@ export const pieces: Piece[] = [
     wordpress,
     zoom,
     connections,
-    youtube,
+    youtube
 ].sort((a, b) => a.displayName > b.displayName ? 1 : -1);
 
 export const getPiece = (name: string): Piece | undefined => {
