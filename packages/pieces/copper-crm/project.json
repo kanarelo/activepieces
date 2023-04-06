@@ -1,0 +1,36 @@
+{
+  "name": "pieces-copper-crm",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/pieces/copper-crm/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/pieces/copper-crm",
+        "tsConfig": "packages/pieces/copper-crm/tsconfig.lib.json",
+        "packageJson": "packages/pieces/copper-crm/package.json",
+        "main": "packages/pieces/copper-crm/src/index.ts",
+        "assets": [
+          "packages/pieces/copper-crm/*.md"
+        ],
+        "buildableProjectDepsInPackageJsonType": "dependencies"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/pieces/copper-crm/**/*.ts"
+        ]
+      }
+    }
+  },
+  "tags": []
+}
