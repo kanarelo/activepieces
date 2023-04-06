@@ -4,6 +4,7 @@ import { asana } from '@activepieces/piece-asana';
 import { bannerbear } from '@activepieces/piece-bannerbear';
 import { binance } from '@activepieces/piece-binance';
 import { blackbaud } from '@activepieces/piece-blackbaud';
+import { copperCrm } from '@activepieces/piece-copper-crm';
 import { calcom } from '@activepieces/piece-cal-com';
 import { calendly } from '@activepieces/piece-calendly';
 import { clickup } from '@activepieces/piece-clickup';
@@ -69,6 +70,7 @@ export const pieces: Piece[] = [
     calendly,
     csv,
     clickup,
+    copperCrm,
     discord,
     drip,
     dropbox,
