@@ -1,4 +1,4 @@
-import { createTrigger, httpClient, HttpMethod } from '@activepieces/framework'
+import { createTrigger, httpClient, HttpMethod, Property } from '@activepieces/framework'
 import { TriggerStrategy } from '@activepieces/shared'
 import { CopperObjectType } from '../common'
 
@@ -11,39 +11,59 @@ interface Props {
   props?: object
 }
 
-export const copperCrmRegisterTrigger = ({ event, displayName, description, sampleData }: Props) => createTrigger({
-  name: `copper_crm_trigger_${event}`,
+export const copperCrmRegisterTrigger = ({ event, displayName, description, type, sampleData }: Props) => createTrigger({
+  name: `copper_crm_trigger_${type}_${event}`,
   displayName,
   description,
   props: {
-    
+    authentication: Property.SecretText({
+      displayName: 'Your API Key',
+      description: `
+      To generate an API token: 
+      1. In the Copper web app go to Settings > Integrations > API Keys
+      2. Click the 'GENERATE API KEY' button. Copper allows you to label each key for its unique purpose. 
+      3. Copy the API key and input below
+      `,
+      required: true
+    }),
+    user_email: Property.ShortText({
+      displayName: 'User Email',
+      description: 'Email address of token owner, for security verification.',
+      required: true
+    })
   },
   sampleData,
   type: TriggerStrategy.WEBHOOK,
   async onEnable({ webhookUrl, store, propsValue }) {
     const response = await httpClient.sendRequest<WebhookInformation>({
       method: HttpMethod.POST,
-      url: `https://${propsValue.account_name}.api-us1.com/api/3/webhooks`,
+      url: `https://api.copper.com/developer_api/v1/webhooks`,
       body: {
-        target: "https://your.endpoint.here",
-        type: type,
+        target: webhookUrl.replace("http://localhost:3000", "https://6aa8-212-49-88-96.eu.ngrok.io"),
         event: event,
+        type: type,
         custom_field_computed_values: true
       },
       headers: {
-        'Api-Token': propsValue.authentication
+        "X-PW-AccessToken": propsValue.authentication,
+        "X-PW-Application": 'developer_api',
+        "X-PW-UserEmail": propsValue.user_email,
+        "Content-Type": "application/json",
       }
     });
     await store.put<WebhookInformation>(`copper_crm_${event}_trigger`, response.body);
   },
   async onDisable({ store, propsValue }) {
-    const response = await store.get<WebhookInformation>(`copper_crm_${event}_trigger`);
-    if (response != null) {
+    const webhook = await store.get<WebhookInformation>(`copper_crm_${event}_trigger`);
+    if (webhook != null) {
       await httpClient.sendRequest({
         method: HttpMethod.DELETE,
-        url: `https://api.copper_crm.com/v3/automations/hooks/${response.webhook.id}`,
+        url: `https://api.copper.com/developer_api/v1/webhooks/${webhook.id}`,
         headers: {
-          'Api-Token': propsValue.authentication
+          "X-PW-AccessToken": propsValue.authentication,
+          "X-PW-Application": 'developer_api',
+          "X-PW-UserEmail": propsValue.user_email,
+          "Content-Type": "application/json",
         }
       });
     }
@@ -55,14 +75,14 @@ export const copperCrmRegisterTrigger = ({ event, displayName, description, samp
 })
 
 interface WebhookInformation {
-  webhook: {
-    id: string
-    cdate: string
-    listid: string
-    name: string
-    url: string
-    events: string[]
-    sources: string[]
-    links: string[]
+  id: number
+  target: string
+  type: string
+  event: string
+  secret?: {
+    secret: string
+    key: string
   }
+  custom_field_computed_values: boolean
+  created_at: number
 }

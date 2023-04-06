@@ -1,5 +1,5 @@
 import { Trigger } from "@/pieces/framework/src"
-import { CopperObjectType } from "../common"
+import { CopperObjectType, capitalise } from "../common"
 import { copperCrmRegisterTrigger } from "./register"
 
 
@@ -60,7 +60,7 @@ const triggers: Trigger[][] = [
     trigger.events.map((event) =>
       copperCrmRegisterTrigger({
         event,
-        displayName: `${trigger.displayName} {}`,
+        displayName: `${trigger.displayName} ${event === 'new' ? 'Created': `${capitalise(event)}d`}`,
         description: `Triggered on ${event} ${trigger.displayName}`,
         sampleData: trigger.sampleData,
         type: trigger.type as CopperObjectType,
