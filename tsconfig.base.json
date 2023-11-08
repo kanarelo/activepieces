@@ -146,6 +146,9 @@
         "packages/pieces/mattermost/src/index.ts"
       ],
       "@activepieces/piece-mautic": ["packages/pieces/mautic/src/index.ts"],
+      "@activepieces/piece-media-moens": [
+        "packages/pieces/media-moens/src/index.ts"
+      ],
       "@activepieces/piece-microsoft-excel-365": [
         "packages/pieces/microsoft-excel-365/src/index.ts"
       ],

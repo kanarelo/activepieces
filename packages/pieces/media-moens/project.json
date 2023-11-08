@@ -1,0 +1,44 @@
+{
+  "name": "pieces-media-moens",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/pieces/media-moens/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/pieces/media-moens",
+        "tsConfig": "packages/pieces/media-moens/tsconfig.lib.json",
+        "packageJson": "packages/pieces/media-moens/package.json",
+        "main": "packages/pieces/media-moens/src/index.ts",
+        "assets": [
+          "packages/pieces/media-moens/*.md"
+        ],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-media-moens {args.ver} {args.tag}",
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/pieces/media-moens/**/*.ts",
+          "packages/pieces/media-moens/package.json"
+        ]
+      }
+    }
+  },
+  "tags": []
+}
