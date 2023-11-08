@@ -633,7 +633,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/24081860?v=4",
       "profile": "http://www.zidoary.com",
       "contributions": [
-        "bug"
+        "bug",
+        "code"
       ]
     },
     {
@@ -670,6 +671,15 @@
       "profile": "https://github.com/miqh",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "fdundjer",
+      "name": "Filip Dunđer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17405319?v=4",
+      "profile": "https://github.com/fdundjer",
+      "contributions": [
+        "code"
       ]
     }
   ],
